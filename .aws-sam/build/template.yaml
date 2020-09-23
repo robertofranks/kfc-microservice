@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'kfc-microservice
+
+  '
+Globals:
+  Function:
+    Timeout: 5
+Resources:
+  KfcProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: KfcProductsFunction
+      Handler: kfc-microservice
+      Runtime: go1.x
+      Tracing: Active
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /products
+            Method: POST
+      Environment:
+        Variables:
+          PARAM1: token
+  KfcStoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: KfcStoreFunction
+      Handler: kfc-microservice
+      Runtime: go1.x
+      Tracing: Active
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /stores
+            Method: POST
+      Environment:
+        Variables:
+          PARAM1: token
+Outputs:
+  KfcMicroserviceAPI:
+    Description: API Gateway endpoint URL for Prod environment for First Function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/kfc/
+  KfcMicroserviceFunction:
+    Description: First Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - KfcMicroservice
+      - Arn
+  KfcMicroserviceFunctionIamRole:
+    Description: Implicit IAM Role
+    Value:
+      Fn::GetAtt:
+      - KfcMicroservice
+      - Arn
